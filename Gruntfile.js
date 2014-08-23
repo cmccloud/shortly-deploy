@@ -9,16 +9,22 @@ module.exports = function(grunt) {
         ],
         dest: './public/dist/clientbuild.js',
       },
-        all:{
-          src: [
-          './public/lib/jquery.js',
-          './public/lib/underscore.js',
-          './public/lib/backbone.js',
-          './public/lib/handlebars.js',
-          './public/dist/clientbuild.js'
-          ],
-          dest: './public/dist/production.js',
-        },
+      libs:{
+        src: [
+        './public/lib/jquery.js',
+        './public/lib/underscore.js',
+        './public/lib/backbone.js',
+        './public/lib/handlebars.js',
+        ],
+        dest: './public/dist/libs.js',
+      },
+      // all: {
+      //   src: [
+      //   './public/dist/clientbuild.min.js',
+      //   './public/dist/libs.min.js'
+      //   ],
+      //   dest: './public/dist/production.min.js'
+      // },
     },
 
     mochaTest: {
@@ -37,11 +43,19 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-      my_target: {
-        files: {
-          './public/dist/production.min.js': ['./public/dist/production.js']
-        }
+     options:{
+      mangle:{
+        except: ['jQuery','Backbone','_', 'Handlebars']
       }
+     },
+     my_target: {
+      files: {
+        './public/dist/production.min.js' : [
+        './public/dist/libs.js',
+        './public/dist/clientbuild.js'
+        ]
+      }
+     }
     },
 
     jshint: {
@@ -118,6 +132,12 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    'jshint:beforeconcat',
+    'concat:client',
+    'jshint:afterconcat',
+    'concat:libs',
+    'uglify',
+    'cssmin',
   ]);
 
   grunt.registerTask('upload', function(n) {
