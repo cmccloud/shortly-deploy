@@ -124,6 +124,7 @@ module.exports = function(grunt) {
     'concat:libs',
     'uglify',
     'cssmin',
+    'mochaTest',
   ]);
 
   grunt.registerTask('upload', function(n) {
