@@ -18,13 +18,6 @@ module.exports = function(grunt) {
         ],
         dest: './public/dist/libs.js',
       },
-      // all: {
-      //   src: [
-      //   './public/dist/clientbuild.min.js',
-      //   './public/dist/libs.min.js'
-      //   ],
-      //   dest: './public/dist/production.min.js'
-      // },
     },
 
     mochaTest: {
@@ -43,19 +36,12 @@ module.exports = function(grunt) {
     },
 
     uglify: {
-     options:{
-      mangle:{
-        except: ['jQuery','Backbone','_', 'Handlebars', 'Templates']
+      my_target: {
+        files: {
+          './public/dist/libs.min.js' : ['./public/dist/libs.js'],
+          './public/dist/production.min.js' : ['./public/dist/clientbuild.js']
+        }
       }
-     },
-     my_target: {
-      files: {
-        './public/dist/production.min.js' : [
-        './public/dist/libs.js',
-        './public/dist/clientbuild.js'
-        ]
-      }
-     }
     },
 
     jshint: {
