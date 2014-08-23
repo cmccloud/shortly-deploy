@@ -45,7 +45,7 @@ module.exports = function(grunt) {
     uglify: {
      options:{
       mangle:{
-        except: ['jQuery','Backbone','_', 'Handlebars']
+        except: ['jQuery','Backbone','_', 'Handlebars', 'Templates']
       }
      },
      my_target: {
