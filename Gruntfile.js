@@ -50,6 +50,11 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      minify: {
+        files: {
+          './public/dist/styles.min.css' : ['./public/style.css']
+        }
+      }
     },
 
     watch: {
