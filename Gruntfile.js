@@ -3,13 +3,22 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
-      dist: {
+      client: {
         src: [
-          './public/client/*.js',
-          './public/lib/*.js'
+          './public/client/*.js'
         ],
-        dest: './public/dist/production.js'
-      }
+        dest: './public/dist/clientbuild.js',
+      },
+        all:{
+          src: [
+          './public/lib/jquery.js',
+          './public/lib/underscore.js',
+          './public/lib/backbone.js',
+          './public/lib/handlebars.js',
+          './public/dist/clientbuild.js'
+          ],
+          dest: './public/dist/production.js',
+        },
     },
 
     mochaTest: {
@@ -36,15 +45,13 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      files: [
-        // Add filespec list here
-      ],
+      beforeconcat: ['./public/client/*.js'],
+      afterconcat: ['./public/dist/clientbuild.js'],
       options: {
         force: 'true',
         jshintrc: '.jshintrc',
         ignores: [
-          'public/lib/**/*.js',
-          'public/dist/**/*.js'
+          'public/lib/**/*.js'
         ]
       }
     },
