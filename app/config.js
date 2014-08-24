@@ -1,5 +1,8 @@
 //var Bookshelf = require('bookshelf');
 var Mongoose = require('mongoose');
+var crypto = require('crypto');
+var bcrypt = require('bcrypt-nodejs');
+var Promise = require('bluebird');
 var path = require('path');
 var hostIP = process.env.IP || '127.0.0.1';
 // MAYBE DB IP
@@ -24,13 +27,53 @@ var db = Mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function(){
   //INVOKE SCHEMAS AND MODEL DEFINITIONS HERE
+  var urlTable = Mongoose.Schema({
+    id: ObjectId, //Possibly Index?
+    url: String,
+    base_url: String,
+    code: String,
+    title: String,
+    visits: Number,
+    timestamps: { type: Date, default: Date.now },
+  });
+
+  urlTable.pre('init', function(next){
+    var shasum = cyrpto.createHash('sha1');
+    shasum.update(this.url);
+    this.code = shasum.diget('hex').slice(0,5);
+    if(next){ next() };
+  });
 
 
+  var userTable = Mongoose.Schema({
+    id: ObjectId,
+    username: { type: [String], index: true},
+    password: String,
+    timestamps: { type: Date, default: Date.now }
+  });
 
+  userTable.pre('init', function(next){
+    this.hashPassword();
+    if(next){ next() };
+  })
 
+  userTable.methods.comparePassword = function(attemptedPassword, callback){
+    bcrypt.compare(attemptedPassword, this.password, function(err, isMatch){
+      callback(isMatch);
+    });
+  };
 
+  userTable.methods.hashPassword = function(){
+    var cipher = Promise.promisify(bcrypt.hash);
+    return ciper(this.password, null, null).bind(this)
+      .then(function(hash) {
+        this.password = hash;
+      });
+  };
 
+  var User = Mongoose.model('User', userTable);
 
+  var Link = Mongoose.model('Link', urlTable);
 
 })
 // db.knex.schema.hasTable('urls').then(function(exists) {
@@ -49,15 +92,6 @@ db.once('open', function(){
 //   }
 // });
 
-var urlTable = Mongoose.Schema({
-  id: ObjectId, //Possibly Index?
-  url: String,
-  base_url: String,
-  code: String,
-  title: String,
-  visits: Number,
-  timestamps: { type: Date, default: Date.now },
-});
 
 
 // db.knex.schema.hasTable('users').then(function(exists) {
@@ -73,11 +107,5 @@ var urlTable = Mongoose.Schema({
 //   }
 // });
 
-var userTable = Mongoose.Schema({
-  id: ObjectId,
-  username: { type: [String], index: true},
-  password: String,
-  timestamps: { type: Date, default: Date.now }
-});
 
 module.exports = db;
